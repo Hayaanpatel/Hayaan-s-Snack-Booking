@@ -528,13 +528,20 @@
       return date + "__" + item;
     }
 
+    // UPDATED: Now only generates and appends valid weekdays (Mon-Fri)
     function nextDays(n) {
       const days = [];
       const base = new Date();
-      for (let i = 0; i < n; i++) {
+      let i = 0;
+      while (days.length < n) {
         const c = new Date(base);
         c.setDate(base.getDate() + i);
-        days.push(c.toISOString().split("T")[0]);
+        const day = c.getDay();
+        // Skip Sunday (0) and Saturday (6)
+        if (day !== 0 && day !== 6) {
+          days.push(c.toISOString().split("T")[0]);
+        }
+        i++;
       }
       return days;
     }
@@ -689,8 +696,10 @@
 
     // ---- Home page ----
 
+    // UPDATED: Standardized to default strictly to the closest upcoming weekday
     function renderHome() {
-      selDate = todayStr();
+      const wDays = nextDays(1);
+      selDate = wDays[0] || todayStr();
       document.getElementById("home-greet").textContent = "Hi, " + me.name + "!";
       renderDays();
       renderSlots();
@@ -816,6 +825,15 @@
 
     async function doBook(item) {
       const bMsg     = document.getElementById("book-msg");
+
+      // UPDATED: Strict fail-safe block to explicitly reject weekend selections
+      const checkDate = new Date(selDate + "T00:00:00");
+      if (checkDate.getDay() === 0 || checkDate.getDay() === 6) {
+        bMsg.classList.remove("hidden");
+        bMsg.textContent = "Bookings are strictly limited to weekdays.";
+        return;
+      }
+
       const existing = bookings[bkKey(selDate, item)];
 
       if (existing) {
@@ -1017,10 +1035,9 @@
     (async () => {
       await refresh();
       
-      // Explicitly check if the admin record does not exist in our locally loaded database object
       if (!users["admin"]) {
         await sSet("usr:admin", { name: "Admin", password: "__UNSET__", isAdmin: true });
-        await refresh(); // update application state
+        await refresh();
       }
       
       show("pg-login");
