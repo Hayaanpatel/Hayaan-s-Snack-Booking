@@ -1,416 +1,1034 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Snack Booking</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif}
-body{background:#fefce8;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
-.card{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);padding:24px;width:100%;max-width:420px}
-h1{font-size:1.4rem;font-weight:900;color:#1f2937;margin-bottom:2px}
-h2{font-size:1rem;font-weight:700;color:#374151;margin-bottom:12px}
-.sub{font-size:0.75rem;color:#6b7280;margin-bottom:20px}
-input{width:100%;border:1px solid #d1d5db;border-radius:8px;padding:9px 12px;font-size:0.875rem;margin-bottom:10px;outline:none}
-input:focus{border-color:#facc15;box-shadow:0 0 0 2px #fef08a}
-.btn{width:100%;padding:10px;border:none;border-radius:8px;font-weight:700;font-size:0.875rem;cursor:pointer;margin-bottom:8px;transition:background 0.15s}
-.btn-y{background:#facc15;color:#111}
-.btn-y:hover{background:#eab308}
-.btn-g{background:#f3f4f6;color:#374151}
-.btn-g:hover{background:#e5e7eb}
-.btn-r{background:#fee2e2;color:#dc2626;font-size:0.75rem;padding:5px 10px;width:auto;border-radius:6px}
-.btn-r:hover{background:#fecaca}
-.btn-sm{font-size:0.75rem;padding:5px 10px;width:auto;border-radius:6px;border:none;cursor:pointer;font-weight:700;transition:background 0.15s}
-.err{color:#ef4444;font-size:0.75rem;margin-bottom:8px}
-.ok{color:#16a34a;font-size:0.75rem;margin-bottom:8px}
-.info-box{background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:10px;font-size:0.8rem;color:#374151;margin-bottom:12px}
-.label{font-size:0.7rem;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:8px}
-.days-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px}
-.day-btn{flex-shrink:0;border:2px solid #e5e7eb;background:#fff;border-radius:10px;padding:8px 12px;text-align:center;cursor:pointer;font-size:0.7rem;font-weight:700;color:#4b5563;transition:all 0.15s}
-.day-btn.active{background:#facc15;border-color:#facc15;color:#111}
-.slots-row{display:flex;gap:8px;margin-bottom:16px}
-.slot-btn{flex:1;border:2px solid #e5e7eb;background:#fff;border-radius:8px;padding:8px;font-size:0.7rem;font-weight:700;color:#4b5563;cursor:pointer;transition:all 0.15s}
-.slot-btn.active{background:#facc15;border-color:#facc15;color:#111}
-.snack-card{border:2px solid #e5e7eb;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.snack-card.mine{border-color:#4ade80;background:#f0fdf4}
-.snack-card.taken{border-color:#fca5a5;background:#fef2f2}
-.snack-name{font-weight:700;font-size:0.9rem;color:#1f2937}
-.snack-sub{font-size:0.7rem;margin-top:2px}
-.snack-sub.green{color:#16a34a;font-weight:600}
-.snack-sub.red{color:#dc2626;font-weight:600}
-.snack-sub.gray{color:#9ca3af}
-.booking-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6}
-.booking-row:last-child{border-bottom:none}
-.booking-item{font-weight:700;font-size:0.85rem}
-.booking-meta{font-size:0.7rem;color:#6b7280;margin-top:2px}
-/* Admin */
-.admin-body{background:#111827}
-.admin-card{background:#1f2937;border-radius:16px;padding:20px;width:100%;max-width:480px}
-.admin-title{color:#fff;font-size:1.3rem;font-weight:900}
-.admin-sub{color:#9ca3af;font-size:0.75rem}
-.tab-row{display:flex;gap:8px;margin-bottom:16px}
-.tab-btn{flex:1;padding:8px;border:none;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;text-transform:capitalize;transition:background 0.15s}
-.tab-btn.active{background:#facc15;color:#111}
-.tab-btn:not(.active){background:#374151;color:#d1d5db}
-.tab-btn:not(.active):hover{background:#4b5563}
-.admin-inner{background:#fff;border-radius:12px;padding:16px}
-.user-row{padding:10px 0;border-bottom:1px solid #f3f4f6}
-.user-row:last-child{border-bottom:none}
-.user-name{font-weight:700;color:#1f2937}
-.user-bk{font-size:0.7rem;color:#d97706;margin-top:2px}
-.flex-between{display:flex;justify-content:space-between;align-items:flex-start}
-.btn-blue{background:#dbeafe;color:#1d4ed8}
-.btn-blue:hover{background:#bfdbfe}
-.btn-del{background:#fee2e2;color:#dc2626}
-.btn-del:hover{background:#fecaca}
-.edit-row{display:flex;gap:6px;margin-top:8px}
-.edit-row input{margin-bottom:0;flex:1}
-.btn-green{background:#4ade80;color:#fff}
-.btn-green:hover{background:#22c55e}
-.logout-btn{background:#374151;color:#fff;font-size:0.75rem;padding:6px 14px;border:none;border-radius:20px;cursor:pointer;font-weight:600}
-.logout-btn:hover{background:#4b5563}
-.logout-btn-light{background:#e5e7eb;color:#374151;font-size:0.75rem;padding:6px 14px;border:none;border-radius:20px;cursor:pointer;font-weight:600}
-.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.hidden{display:none}
-.section{margin-bottom:16px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snack Booking</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    body {
+      background: #fefce8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 24px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #1f2937;
+      margin-bottom: 2px;
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 12px;
+    }
+
+    .sub {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 0.875rem;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #facc15;
+      box-shadow: 0 0 0 2px #fef08a;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-y {
+      background: #facc15;
+      color: #111;
+    }
+
+    .btn-y:hover {
+      background: #eab308;
+    }
+
+    .btn-g {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-g:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-sm {
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      width: auto;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+
+    .btn-r {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .btn-r:hover {
+      background: #fecaca;
+    }
+
+    .btn-blue {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .btn-blue:hover {
+      background: #bfdbfe;
+    }
+
+    .btn-del {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .btn-del:hover {
+      background: #fecaca;
+    }
+
+    .btn-green {
+      background: #4ade80;
+      color: #fff;
+    }
+
+    .btn-green:hover {
+      background: #22c55e;
+    }
+
+    .err {
+      color: #ef4444;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+    }
+
+    .ok {
+      color: #16a34a;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+    }
+
+    .info-box {
+      background: #fefce8;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.8rem;
+      color: #374151;
+      margin-bottom: 12px;
+    }
+
+    .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .days-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 16px;
+    }
+
+    .day-btn {
+      flex-shrink: 0;
+      border: 2px solid #e5e7eb;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #4b5563;
+      transition: all 0.15s;
+    }
+
+    .day-btn.active {
+      background: #facc15;
+      border-color: #facc15;
+      color: #111;
+    }
+
+    .slots-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .slot-btn {
+      flex: 1;
+      border: 2px solid #e5e7eb;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #4b5563;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .slot-btn.active {
+      background: #facc15;
+      border-color: #facc15;
+      color: #111;
+    }
+
+    .snack-card {
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .snack-card.mine {
+      border-color: #4ade80;
+      background: #f0fdf4;
+    }
+
+    .snack-card.taken {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+
+    .snack-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #1f2937;
+    }
+
+    .snack-sub {
+      font-size: 0.7rem;
+      margin-top: 2px;
+    }
+
+    .snack-sub.green { color: #16a34a; font-weight: 600; }
+    .snack-sub.red   { color: #dc2626; font-weight: 600; }
+    .snack-sub.gray  { color: #9ca3af; }
+
+    .booking-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .booking-row:last-child {
+      border-bottom: none;
+    }
+
+    .booking-item {
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .booking-meta {
+      font-size: 0.7rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .logout-btn-light {
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      background: #374151;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .edit-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .edit-row input {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .user-row {
+      padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .user-row:last-child {
+      border-bottom: none;
+    }
+
+    .user-name {
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .user-bk {
+      font-size: 0.7rem;
+      color: #d97706;
+      margin-top: 2px;
+    }
+
+    /* Admin styles */
+    .admin-wrap {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .admin-card {
+      background: #1f2937;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .admin-title {
+      color: #fff;
+      font-size: 1.3rem;
+      font-weight: 900;
+    }
+
+    .admin-sub {
+      color: #9ca3af;
+      font-size: 0.75rem;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: capitalize;
+      transition: background 0.15s;
+    }
+
+    .tab-btn.active {
+      background: #facc15;
+      color: #111;
+    }
+
+    .tab-btn:not(.active) {
+      background: #374151;
+      color: #d1d5db;
+    }
+
+    .tab-btn:not(.active):hover {
+      background: #4b5563;
+    }
+
+    .admin-inner {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body id="body">
 
-<!-- LOGIN PAGE -->
-<div id="pg-login" class="card">
-  <div style="text-align:center;margin-bottom:20px">
-    <div style="font-size:2.5rem;margin-bottom:4px">&#x1F35F;&#x1F36A;</div>
-    <h1>Snack Booking</h1>
-    <p class="sub">Book your Lays and Biscuits slot</p>
-  </div>
-  <h2 id="auth-title">Login</h2>
-  <input id="auth-name" placeholder="Your Name" autocomplete="off"/>
-  <input id="auth-pass" placeholder="Password" type="password"/>
-  <div id="auth-msg" class="err hidden"></div>
-  <button class="btn btn-y" onclick="authSubmit()">Login</button>
-  <button class="btn btn-g" id="auth-toggle" onclick="toggleAuth()">Create Account</button>
-</div>
-
-<!-- HOME PAGE -->
-<div id="pg-home" class="card hidden">
-  <div class="top-row">
-    <div>
-      <h1 style="font-size:1.2rem">&#x1F35F; Snack Booking</h1>
-      <p class="sub" id="home-greet" style="margin-bottom:0"></p>
+  <!-- LOGIN PAGE -->
+  <div id="pg-login" class="card">
+    <div style="text-align:center; margin-bottom:20px">
+      <div style="font-size:2.5rem; margin-bottom:4px">&#x1F35F;&#x1F36A;</div>
+      <h1>Snack Booking</h1>
+      <p class="sub">Book your Lays and Biscuits slot</p>
     </div>
-    <button class="logout-btn-light" onclick="logout()">Logout</button>
+    <h2 id="auth-title">Login</h2>
+    <input id="auth-name" placeholder="Your Name" autocomplete="off" />
+    <input id="auth-pass" placeholder="Password" type="password" />
+    <div id="auth-msg" class="err hidden"></div>
+    <button class="btn btn-y" onclick="authSubmit()">Login</button>
+    <button class="btn btn-g" id="auth-toggle" onclick="toggleAuth()">Create Account</button>
   </div>
 
-  <div class="section">
-    <div class="label">Select Day</div>
-    <div class="days-row" id="days-row"></div>
-  </div>
-
-  <div class="section">
-    <div class="label">Select Slot</div>
-    <div class="slots-row" id="slots-row"></div>
-  </div>
-
-  <div class="section">
-    <div class="label">Available Snacks</div>
-    <div id="book-msg" class="info-box hidden"></div>
-    <div id="snack-cards"></div>
-  </div>
-
-  <div class="section">
-    <div class="label">My Upcoming Bookings</div>
-    <div id="my-bookings"></div>
-  </div>
-</div>
-
-<!-- ADMIN PAGE -->
-<div id="pg-admin" class="hidden" style="width:100%;max-width:480px">
-  <div class="admin-card">
+  <!-- HOME PAGE -->
+  <div id="pg-home" class="card hidden">
     <div class="top-row">
       <div>
-        <div class="admin-title">&#x2699;&#xFE0F; Admin Panel</div>
-        <div class="admin-sub">Snack Booking Manager</div>
+        <h1 style="font-size:1.2rem">&#x1F35F; Snack Booking</h1>
+        <p class="sub" id="home-greet" style="margin-bottom:0"></p>
       </div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <button class="logout-btn-light" onclick="logout()">Logout</button>
     </div>
-    <div class="tab-row">
-      <button class="tab-btn active" id="tab-bookings" onclick="setTab('bookings')">Bookings</button>
-      <button class="tab-btn" id="tab-users" onclick="setTab('users')">Users</button>
-      <button class="tab-btn" id="tab-settings" onclick="setTab('settings')">Settings</button>
+
+    <div class="section">
+      <div class="label">Select Day</div>
+      <div class="days-row" id="days-row"></div>
     </div>
-    <div class="admin-inner">
-      <div id="admin-bookings-tab"></div>
-      <div id="admin-users-tab" class="hidden"></div>
-      <div id="admin-settings-tab" class="hidden"></div>
+
+    <div class="section">
+      <div class="label">Select Slot</div>
+      <div class="slots-row" id="slots-row"></div>
+    </div>
+
+    <div class="section">
+      <div class="label">Available Snacks</div>
+      <div id="book-msg" class="info-box hidden"></div>
+      <div id="snack-cards"></div>
+    </div>
+
+    <div class="section">
+      <div class="label">My Upcoming Bookings</div>
+      <div id="my-bookings"></div>
     </div>
   </div>
-</div>
 
-<!-- ADMIN FIRST SETUP -->
-<div id="pg-setup" class="card hidden">
-  <h2 style="margin-bottom:8px">&#x1F510; Set Admin Password</h2>
-  <p class="sub">First time setup — choose your admin password.</p>
-  <input id="setup-pass" placeholder="New admin password" type="password"/>
-  <button class="btn btn-y" onclick="doSetAdminPass()">Set Password</button>
-</div>
+  <!-- ADMIN PAGE -->
+  <div id="pg-admin" class="admin-wrap hidden">
+    <div class="admin-card">
+      <div class="top-row">
+        <div>
+          <div class="admin-title">&#x2699; Admin Panel</div>
+          <div class="admin-sub">Snack Booking Manager</div>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+      <div class="tab-row">
+        <button class="tab-btn active" id="tab-bookings" onclick="setTab('bookings')">Bookings</button>
+        <button class="tab-btn" id="tab-users" onclick="setTab('users')">Users</button>
+        <button class="tab-btn" id="tab-settings" onclick="setTab('settings')">Settings</button>
+      </div>
+      <div class="admin-inner">
+        <div id="admin-bookings-tab"></div>
+        <div id="admin-users-tab" class="hidden"></div>
+        <div id="admin-settings-tab" class="hidden"></div>
+      </div>
+    </div>
+  </div>
 
-<script>
-const SLOTS = ["Before School","Break Time","Lunch"];
-const ITEMS = ["Lays","Biscuits"];
-let users = {}, bookings = {}, me = null, selDate = "", selSlot = SLOTS[0], aTab = "bookings", isRegister = false;
+  <!-- ADMIN FIRST SETUP -->
+  <div id="pg-setup" class="card hidden">
+    <h2 style="margin-bottom:8px">&#x1F510; Set Admin Password</h2>
+    <p class="sub">First time setup — choose your admin password.</p>
+    <input id="setup-pass" placeholder="New admin password" type="password" />
+    <button class="btn btn-y" onclick="doSetAdminPass()">Set Password</button>
+  </div>
 
-function todayStr(){return new Date().toISOString().split("T")[0]}
-function fmtDate(d){const dt=new Date(d+"T00:00:00");return dt.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}
-function bkKey(date,item){return date+"__"+item}
-function nextDays(n){const days=[],b=new Date();for(let i=0;i<n;i++){const c=new Date(b);c.setDate(b.getDate()+i);days.push(c.toISOString().split("T")[0])}return days}
+  <script>
 
-// --- Storage helpers ---
-async function sGet(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null}catch{return null}}
-async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch{}}
-async function sDel(k){try{await window.storage.delete(k)}catch{}}
-async function sList(prefix){try{const r=await window.storage.list(prefix);return r.keys}catch{return[]}}
+    // ---- Constants ----
 
-async function loadUsers(){
-  const keys=await sList("usr:");
-  const out={};
-  for(const k of keys){const v=await sGet(k);if(v)out[k.replace("usr:","")]=v;}
-  return out;
-}
-async function loadBookings(){
-  const keys=await sList("bk:");
-  const out={};
-  for(const k of keys){const v=await sGet(k);if(v)out[k.replace("bk:","")]=v;}
-  return out;
-}
-async function refresh(){users=await loadUsers();bookings=await loadBookings();}
+    const SLOTS = ["Before School", "Break Time", "Lunch"];
+    const ITEMS = ["Lays", "Biscuits"];
 
-function show(id){document.querySelectorAll("[id^='pg-']").forEach(el=>el.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");if(id==="pg-admin"||id==="pg-setup"){document.getElementById("body").style.background="#111827"}else{document.getElementById("body").style.background="#fefce8"}}
+    // ---- State ----
 
-// --- Auth ---
-function toggleAuth(){
-  isRegister=!isRegister;
-  document.getElementById("auth-title").textContent=isRegister?"Create Account":"Login";
-  document.getElementById("auth-toggle").textContent=isRegister?"Back to Login":"Create Account";
-  document.querySelector(".btn-y").textContent=isRegister?"Create Account":"Login";
-  setMsg("auth-msg","","");
-}
-function setMsg(id,text,type){const el=document.getElementById(id);if(!text){el.classList.add("hidden");return}el.classList.remove("hidden");el.className=(type==="ok"?"ok":"err");el.textContent=text;}
+    let users    = {};
+    let bookings = {};
+    let me       = null;
+    let selDate  = "";
+    let selSlot  = SLOTS[0];
+    let aTab     = "bookings";
+    let isReg    = false;
 
-async function authSubmit(){
-  const name=document.getElementById("auth-name").value.trim();
-  const pass=document.getElementById("auth-pass").value;
-  if(isRegister){
-    const key=name.toLowerCase();
-    if(!key||!pass)return setMsg("auth-msg","Please fill in all fields.","err");
-    if(key==="admin")return setMsg("auth-msg","That name is reserved.","err");
-    if(users[key])return setMsg("auth-msg","Name already taken.","err");
-    await sSet("usr:"+key,{name,password:pass,isAdmin:false});
-    await refresh();
-    setMsg("auth-msg","Account created! You can now log in.","ok");
-    isRegister=false;
-    document.getElementById("auth-title").textContent="Login";
-    document.getElementById("auth-toggle").textContent="Create Account";
-    document.querySelector(".btn-y").textContent="Login";
-    document.getElementById("auth-name").value="";
-    document.getElementById("auth-pass").value="";
-  } else {
-    const key=name.toLowerCase();
-    const u=users[key];
-    if(!u)return setMsg("auth-msg","Account not found.","err");
-    if(u.isAdmin&&u.password==="__UNSET__"){me={...u,username:key};show("pg-setup");return;}
-    if(u.password!==pass)return setMsg("auth-msg","Wrong password.","err");
-    me={...u,username:key};
-    if(u.isAdmin){show("pg-admin");renderAdmin();}
-    else{show("pg-home");renderHome();}
-  }
-}
+    // ---- Utility ----
 
-function logout(){me=null;show("pg-login");document.getElementById("auth-name").value="";document.getElementById("auth-pass").value="";}
-
-// --- Admin setup ---
-async function doSetAdminPass(){
-  const p=document.getElementById("setup-pass").value;
-  if(!p)return;
-  const u=users["admin"];
-  await sSet("usr:admin",{...u,password:p});
-  await refresh();
-  show("pg-admin");renderAdmin();
-}
-
-// --- Home ---
-function renderHome(){
-  selDate=todayStr();
-  document.getElementById("home-greet").textContent="Hi, "+me.name+"!";
-  renderDays();renderSlots();renderSnacks();renderMyBookings();
-}
-
-function renderDays(){
-  const days=nextDays(7);
-  const row=document.getElementById("days-row");
-  row.innerHTML="";
-  days.forEach(d=>{
-    const b=document.createElement("button");
-    b.className="day-btn"+(d===selDate?" active":"");
-    const dt=new Date(d+"T00:00:00");
-    b.innerHTML="<div>"+dt.toLocaleDateString("en-GB",{weekday:"short"})+"</div><div>"+dt.getDate()+"</div>";
-    b.onclick=()=>{selDate=d;document.getElementById("book-msg").classList.add("hidden");renderDays();renderSnacks();};
-    row.appendChild(b);
-  });
-}
-
-function renderSlots(){
-  const row=document.getElementById("slots-row");
-  row.innerHTML="";
-  SLOTS.forEach(s=>{
-    const b=document.createElement("button");
-    b.className="slot-btn"+(s===selSlot?" active":"");
-    b.textContent=s;
-    b.onclick=()=>{selSlot=s;renderSlots();};
-    row.appendChild(b);
-  });
-}
-
-function renderSnacks(){
-  const cont=document.getElementById("snack-cards");
-  cont.innerHTML="";
-  ITEMS.forEach(item=>{
-    const b=bookings[bkKey(selDate,item)];
-    const mine=b&&b.user===me.username;
-    const taken=b&&!mine;
-    const card=document.createElement("div");
-    card.className="snack-card"+(mine?" mine":taken?" taken":"");
-    const left=document.createElement("div");
-    const icon=item==="Lays"?"&#x1F35F;":"&#x1F36A;";
-    left.innerHTML="<div class='snack-name'>"+icon+" "+item+"</div>";
-    if(mine)left.innerHTML+="<div class='snack-sub green'>You booked this &middot; "+b.slot+"</div>";
-    else if(taken)left.innerHTML+="<div class='snack-sub red'>Booked by "+b.bookedName+"</div>";
-    else left.innerHTML+="<div class='snack-sub gray'>Available</div>";
-    card.appendChild(left);
-    const right=document.createElement("div");
-    if(mine){
-      const btn=document.createElement("button");
-      btn.className="btn btn-r";btn.textContent="Cancel";
-      btn.onclick=()=>cancelBooking(selDate,item);
-      right.appendChild(btn);
-    } else if(taken){
-      const span=document.createElement("span");
-      span.style.cssText="background:#fee2e2;color:#f87171;font-size:0.75rem;padding:5px 10px;border-radius:6px;font-weight:700";
-      span.textContent="Taken";right.appendChild(span);
-    } else {
-      const btn=document.createElement("button");
-      btn.className="btn btn-y btn-sm";btn.textContent="Book";
-      btn.onclick=()=>doBook(item);
-      right.appendChild(btn);
+    function todayStr() {
+      return new Date().toISOString().split("T")[0];
     }
-    card.appendChild(right);
-    cont.appendChild(card);
-  });
-}
 
-function renderMyBookings(){
-  const cont=document.getElementById("my-bookings");
-  const mine=Object.values(bookings).filter(b=>b.user===me.username&&b.date>=todayStr()).sort((a,b)=>a.date.localeCompare(b.date));
-  if(!mine.length){cont.innerHTML="<p style='font-size:0.75rem;color:#9ca3af'>No upcoming bookings.</p>";return;}
-  cont.innerHTML="";
-  mine.forEach(b=>{
-    const row=document.createElement("div");
-    row.className="booking-row";
-    row.innerHTML="<div><div class='booking-item'>"+(b.item==="Lays"?"&#x1F35F;":"&#x1F36A;")+" "+b.item+"</div><div class='booking-meta'>"+fmtDate(b.date)+" &middot; "+b.slot+"</div></div>";
-    const btn=document.createElement("button");
-    btn.style.cssText="background:none;border:none;color:#ef4444;font-size:0.75rem;cursor:pointer;text-decoration:underline";
-    btn.textContent="Cancel";btn.onclick=()=>cancelBooking(b.date,b.item);
-    row.appendChild(btn);
-    cont.appendChild(row);
-  });
-}
+    function fmtDate(d) {
+      const dt = new Date(d + "T00:00:00");
+      return dt.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+    }
 
-async function doBook(item){
-  const bMsg=document.getElementById("book-msg");
-  const existing=bookings[bkKey(selDate,item)];
-  if(existing){
-    if(existing.user===me.username){bMsg.classList.remove("hidden");bMsg.textContent="You already booked "+item+" for "+fmtDate(selDate)+".";return;}
-    const days=nextDays(14);
-    const next=days.find(d=>d>selDate&&!bookings[bkKey(d,item)]);
-    bMsg.classList.remove("hidden");
-    bMsg.textContent=existing.bookedName+" already booked "+item+" for "+fmtDate(selDate)+". Next free: "+(next?fmtDate(next):"None in 2 weeks")+".";
-    return;
-  }
-  await sSet("bk:"+bkKey(selDate,item),{user:me.username,bookedName:me.name,item,date:selDate,slot:selSlot});
-  await refresh();
-  bMsg.classList.remove("hidden");
-  bMsg.textContent="Booked "+item+" for "+fmtDate(selDate)+" at "+selSlot+"!";
-  renderSnacks();renderMyBookings();
-}
+    function bkKey(date, item) {
+      return date + "__" + item;
+    }
 
-async function cancelBooking(date,item){
-  const b=bookings[bkKey(date,item)];
-  if(!b)return;
-  if(!me.isAdmin&&b.user!==me.username)return;
-  await sDel("bk:"+bkKey(date,item));
-  await refresh();
-  if(me.isAdmin){renderAdmin();}
-  else{const bMsg=document.getElementById("book-msg");bMsg.classList.remove("hidden");bMsg.textContent="Booking cancelled.";renderSnacks();renderMyBookings();}
-}
+    function nextDays(n) {
+      const days = [];
+      const base = new Date();
+      for (let i = 0; i < n; i++) {
+        const c = new Date(base);
+        c.setDate(base.getDate() + i);
+        days.push(c.toISOString().split("T")[0]);
+      }
+      return days;
+    }
 
-// --- Admin ---
-function setTab(t){
-  aTab=t;
-  ["bookings","users","settings"].forEach(x=>{
-    document.getElementById("tab-"+x).className="tab-btn"+(x===t?" active":"");
-    document.getElementById("admin-"+x+"-tab").className=x===t?"":"hidden";
-  });
-  renderAdmin();
-}
+    // ---- Storage ----
 
-function renderAdmin(){
-  const allBk=Object.values(bookings).sort((a,b)=>a.date.localeCompare(b.date));
-  const nonAdmins=Object.entries(users).filter(([k])=>k!=="admin");
+    async function sGet(k) {
+      try {
+        const r = await window.storage.get(k);
+        return r ? JSON.parse(r.value) : null;
+      } catch {
+        return null;
+      }
+    }
 
-  // Bookings tab
-  const bTab=document.getElementById("admin-bookings-tab");
-  bTab.innerHTML="<div class='label'>All Bookings ("+allBk.length+")</div>";
-  if(!allBk.length){bTab.innerHTML+="<p style='font-size:0.75rem;color:#9ca3af'>No bookings yet.</p>";}
-  allBk.forEach(b=>{
-    const row=document.createElement("div");
-    row.className="booking-row";
-    row.innerHTML="<div><div class='booking-item'>"+b.item+" &rarr; "+b.bookedName+"</div><div class='booking-meta'>"+fmtDate(b.date)+" &middot; "+b.slot+"</div></div>";
-    const btn=document.createElement("button");
-    btn.style.cssText="background:none;border:none;color:#ef4444;font-size:0.75rem;cursor:pointer;text-decoration:underline";
-    btn.textContent="Delete";btn.onclick=()=>cancelBooking(b.date,b.item);
-    row.appendChild(btn);
-    bTab.appendChild(row);
-  });
+    async function sSet(k, v) {
+      try {
+        await window.storage.set(k, JSON.stringify(v));
+      } catch {}
+    }
 
-  // Users tab
-  const uTab=document.getElementById("admin-users-tab");
-  uTab.innerHTML="<div class='label'>Users ("+nonAdmins.length+")</div>";
-  if(!nonAdmins.length){uTab.innerHTML+="<p style='font-size:0.75rem;color:#9ca3af'>No users yet.</p>";}
-  nonAdmins.forEach(([key,u])=>{
-    const ub=allBk.filter(b=>b.user===key);
-    const wrap=document.createElement("div");
-    wrap.className="user-row";
-    const top=document.createElement("div");
-    top.className="flex-between";
-    const info=document.createElement("div");
-    info.innerHTML="<div class='user-name'>"+u.name+"</div><div style='font-size:0.7rem;color:#9ca3af'>"+ub.length+" booking"+(ub.length!==1?"s":"")+"</div>";
-    ub.forEach(b=>{const p=document.createElement("div");p.className="user-bk";p.textContent=b.item+" · "+fmtDate(b.date)+" · "+b.slot;info.appendChild(p);});
-    const btns=document.createElement("div");
-    btns.style.display="flex";btns.style.gap="4px";
-    const eBtn=document.createElement("button");
-    eBtn.className="btn-sm btn-blue";eBtn.textContent="Edit";
-    eBtn.onclick=()=>{
-      const existing=document.getElementById("edit-"+key);
-      if(existing){existing.remove();return;}
-      const row=document.createElement("div");
-      row.className="edit-row";row.id="edit-"+key;
-      const ip=document.createElement("input");ip.placeholder="New password";ip.type="password";
-      const sv=document.createElement("button");sv.className="btn-sm btn-green";sv.textContent="Save";
-      sv.onclick=async()=>{if(!ip.value)return;const usr=users[key];await sSet("usr:"+key,{...usr,password:ip.value});await refresh();row.remove();renderAdmin();};
-      const cl=document.createElement("button");cl.className="btn-sm btn-g";cl.textContent="X";cl.onclick=()=>row.remove();
-      row.appendChild(ip);row.appendChild(sv);row.appendChild(cl);
-      wrap.appendChild(row);
-    };
-    const dBtn=document.createElement("button");
-    dBtn.className="btn-sm btn-del";dBtn.textContent="Del";
-    dBtn.onclick=async(
+    async function sDel(k) {
+      try {
+        await window.storage.delete(k);
+      } catch {}
+    }
+
+    async function sList(prefix) {
+      try {
+        const r = await window.storage.list(prefix);
+        return r.keys;
+      } catch {
+        return [];
+      }
+    }
+
+    async function loadUsers() {
+      const keys = await sList("usr:");
+      const out  = {};
+      for (const k of keys) {
+        const v = await sGet(k);
+        if (v) out[k.replace("usr:", "")] = v;
+      }
+      return out;
+    }
+
+    async function loadBookings() {
+      const keys = await sList("bk:");
+      const out  = {};
+      for (const k of keys) {
+        const v = await sGet(k);
+        if (v) out[k.replace("bk:", "")] = v;
+      }
+      return out;
+    }
+
+    async function refresh() {
+      users    = await loadUsers();
+      bookings = await loadBookings();
+    }
+
+    // ---- Page switching ----
+
+    function show(id) {
+      document.querySelectorAll("[id^='pg-'], .admin-wrap").forEach(el => el.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      if (id === "pg-admin" || id === "pg-setup") {
+        document.getElementById("body").style.background = "#111827";
+      } else {
+        document.getElementById("body").style.background = "#fefce8";
+      }
+    }
+
+    // ---- Auth ----
+
+    function toggleAuth() {
+      isReg = !isReg;
+      document.getElementById("auth-title").textContent   = isReg ? "Create Account" : "Login";
+      document.getElementById("auth-toggle").textContent  = isReg ? "Back to Login"  : "Create Account";
+      document.querySelector(".btn-y").textContent         = isReg ? "Create Account" : "Login";
+      setMsg("auth-msg", "", "");
+    }
+
+    function setMsg(id, text, type) {
+      const el = document.getElementById(id);
+      if (!text) {
+        el.classList.add("hidden");
+        return;
+      }
+      el.classList.remove("hidden");
+      el.className = type === "ok" ? "ok" : "err";
+      el.textContent = text;
+    }
+
+    async function authSubmit() {
+      const name = document.getElementById("auth-name").value.trim();
+      const pass = document.getElementById("auth-pass").value;
+
+      if (isReg) {
+        const key = name.toLowerCase();
+        if (!key || !pass)    return setMsg("auth-msg", "Please fill in all fields.", "err");
+        if (key === "admin")  return setMsg("auth-msg", "That name is reserved.", "err");
+        if (users[key])       return setMsg("auth-msg", "Name already taken.", "err");
+        await sSet("usr:" + key, { name, password: pass, isAdmin: false });
+        await refresh();
+        setMsg("auth-msg", "Account created! You can now log in.", "ok");
+        isReg = false;
+        document.getElementById("auth-title").textContent  = "Login";
+        document.getElementById("auth-toggle").textContent = "Create Account";
+        document.querySelector(".btn-y").textContent        = "Login";
+        document.getElementById("auth-name").value = "";
+        document.getElementById("auth-pass").value = "";
+
+      } else {
+        const key = name.toLowerCase();
+        const u   = users[key];
+        if (!u) return setMsg("auth-msg", "Account not found.", "err");
+        if (u.isAdmin && u.password === "__UNSET__") {
+          me = { ...u, username: key };
+          show("pg-setup");
+          return;
+        }
+        if (u.password !== pass) return setMsg("auth-msg", "Wrong password.", "err");
+        me = { ...u, username: key };
+        if (u.isAdmin) {
+          show("pg-admin");
+          renderAdmin();
+        } else {
+          show("pg-home");
+          renderHome();
+        }
+      }
+    }
+
+    function logout() {
+      me = null;
+      show("pg-login");
+      document.getElementById("auth-name").value = "";
+      document.getElementById("auth-pass").value = "";
+    }
+
+    // ---- Admin first setup ----
+
+    async function doSetAdminPass() {
+      const p = document.getElementById("setup-pass").value;
+      if (!p) return;
+      const u = users["admin"];
+      await sSet("usr:admin", { ...u, password: p });
+      await refresh();
+      show("pg-admin");
+      renderAdmin();
+    }
+
+    // ---- Home page ----
+
+    function renderHome() {
+      selDate = todayStr();
+      document.getElementById("home-greet").textContent = "Hi, " + me.name + "!";
+      renderDays();
+      renderSlots();
+      renderSnacks();
+      renderMyBookings();
+    }
+
+    function renderDays() {
+      const days = nextDays(7);
+      const row  = document.getElementById("days-row");
+      row.innerHTML = "";
+      days.forEach(d => {
+        const btn = document.createElement("button");
+        btn.className = "day-btn" + (d === selDate ? " active" : "");
+        const dt = new Date(d + "T00:00:00");
+        btn.innerHTML = "<div>" + dt.toLocaleDateString("en-GB", { weekday: "short" }) + "</div>"
+                      + "<div>" + dt.getDate() + "</div>";
+        btn.onclick = () => {
+          selDate = d;
+          document.getElementById("book-msg").classList.add("hidden");
+          renderDays();
+          renderSnacks();
+        };
+        row.appendChild(btn);
+      });
+    }
+
+    function renderSlots() {
+      const row = document.getElementById("slots-row");
+      row.innerHTML = "";
+      SLOTS.forEach(s => {
+        const btn = document.createElement("button");
+        btn.className = "slot-btn" + (s === selSlot ? " active" : "");
+        btn.textContent = s;
+        btn.onclick = () => {
+          selSlot = s;
+          renderSlots();
+        };
+        row.appendChild(btn);
+      });
+    }
+
+    function renderSnacks() {
+      const cont = document.getElementById("snack-cards");
+      cont.innerHTML = "";
+      ITEMS.forEach(item => {
+        const b     = bookings[bkKey(selDate, item)];
+        const mine  = b && b.user === me.username;
+        const taken = b && !mine;
+        const icon  = item === "Lays" ? "&#x1F35F;" : "&#x1F36A;";
+
+        const card = document.createElement("div");
+        card.className = "snack-card" + (mine ? " mine" : taken ? " taken" : "");
+
+        const left = document.createElement("div");
+        left.innerHTML = "<div class='snack-name'>" + icon + " " + item + "</div>";
+
+        if (mine) {
+          left.innerHTML += "<div class='snack-sub green'>You booked this &middot; " + b.slot + "</div>";
+        } else if (taken) {
+          left.innerHTML += "<div class='snack-sub red'>Booked by " + b.bookedName + "</div>";
+        } else {
+          left.innerHTML += "<div class='snack-sub gray'>Available</div>";
+        }
+
+        const right = document.createElement("div");
+
+        if (mine) {
+          const btn = document.createElement("button");
+          btn.className   = "btn-sm btn-r";
+          btn.textContent = "Cancel";
+          btn.onclick     = () => cancelBooking(selDate, item);
+          right.appendChild(btn);
+
+        } else if (taken) {
+          const span = document.createElement("span");
+          span.style.cssText  = "background:#fee2e2;color:#f87171;font-size:0.75rem;padding:5px 10px;border-radius:6px;font-weight:700";
+          span.textContent    = "Taken";
+          right.appendChild(span);
+
+        } else {
+          const btn = document.createElement("button");
+          btn.className   = "btn-sm btn-y";
+          btn.textContent = "Book";
+          btn.onclick     = () => doBook(item);
+          right.appendChild(btn);
+        }
+
+        card.appendChild(left);
+        card.appendChild(right);
+        cont.appendChild(card);
+      });
+    }
+
+    function renderMyBookings() {
+      const cont = document.getElementById("my-bookings");
+      const mine = Object.values(bookings)
+        .filter(b => b.user === me.username && b.date >= todayStr())
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      if (!mine.length) {
+        cont.innerHTML = "<p style='font-size:0.75rem;color:#9ca3af'>No upcoming bookings.</p>";
+        return;
+      }
+
+      cont.innerHTML = "";
+      mine.forEach(b => {
+        const icon = b.item === "Lays" ? "&#x1F35F;" : "&#x1F36A;";
+        const row  = document.createElement("div");
+        row.className = "booking-row";
+        row.innerHTML = "<div>"
+          + "<div class='booking-item'>" + icon + " " + b.item + "</div>"
+          + "<div class='booking-meta'>" + fmtDate(b.date) + " &middot; " + b.slot + "</div>"
+          + "</div>";
+        const btn = document.createElement("button");
+        btn.style.cssText  = "background:none;border:none;color:#ef4444;font-size:0.75rem;cursor:pointer;text-decoration:underline";
+        btn.textContent    = "Cancel";
+        btn.onclick        = () => cancelBooking(b.date, b.item);
+        row.appendChild(btn);
+        cont.appendChild(row);
+      });
+    }
+
+    async function doBook(item) {
+      const bMsg     = document.getElementById("book-msg");
+      const existing = bookings[bkKey(selDate, item)];
+
+      if (existing) {
+        if (existing.user === me.username) {
+          bMsg.classList.remove("hidden");
+          bMsg.textContent = "You already booked " + item + " for " + fmtDate(selDate) + ".";
+          return;
+        }
+        const days = nextDays(14);
+        const next = days.find(d => d > selDate && !bookings[bkKey(d, item)]);
+        bMsg.classList.remove("hidden");
+        bMsg.textContent = existing.bookedName + " already booked " + item + " for " + fmtDate(selDate)
+          + ". Next free: " + (next ? fmtDate(next) : "None in 2 weeks") + ".";
+        return;
+      }
+
+      await sSet("bk:" + bkKey(selDate, item), {
+        user: me.username,
+        bookedName: me.name,
+        item,
+        date: selDate,
+        slot: selSlot
+      });
+
+      await refresh();
+      bMsg.classList.remove("hidden");
+      bMsg.textContent = "Booked " + item + " for " + fmtDate(selDate) + " at " + selSlot + "!";
+      renderSnacks();
+      renderMyBookings();
+    }
+
+    async function cancelBooking(date, item) {
+      const b = bookings[bkKey(date, item)];
+      if (!b) return;
+      if (!me.isAdmin && b.user !== me.username) return;
+      await sDel("bk:" + bkKey(date, item));
+      await refresh();
+      if (me.isAdmin) {
+        renderAdmin();
+      } else {
+        const bMsg = document.getElementById("book-msg");
+        bMsg.classList.remove("hidden");
+        bMsg.textContent = "Booking cancelled.";
+        renderSnacks();
+        renderMyBookings();
+      }
+    }
+
+    // ---- Admin page ----
+
+    function setTab(t) {
+      aTab = t;
+      ["bookings", "users", "settings"].forEach(x => {
+        document.getElementById("tab-" + x).className          = "tab-btn" + (x === t ? " active" : "");
+        document.getElementById("admin-" + x + "-tab").className = x === t ? "" : "hidden";
+      });
+      renderAdmin();
+    }
+
+    function renderAdmin() {
+      const allBk     = Object.values(bookings).sort((a, b) => a.date.localeCompare(b.date));
+      const nonAdmins = Object.entries(users).filter(([k]) => k !== "admin");
+
+      // --- Bookings tab ---
+      const bTab = document.getElementById("admin-bookings-tab");
+      bTab.innerHTML = "<div class='label'>All Bookings (" + allBk.length + ")</div>";
+
+      if (!allBk.length) {
+        bTab.innerHTML += "<p style='font-size:0.75rem;color:#9ca3af'>No bookings yet.</p>";
+      }
+
+      allBk.forEach(b => {
+        const icon = b.item === "Lays" ? "&#x1F35F;" : "&#x1F36A;";
+        const row  = document.createElement("div");
+        row.className = "booking-row";
+        row.innerHTML = "<div>"
+          + "<div class='booking-item'>" + icon + " " + b.item + " &rarr; " + b.bookedName + "</div>"
+          + "<div class='booking-meta'>" + fmtDate(b.date) + " &middot; " + b.slot + "</div>"
+          + "</div>";
+        const btn = document.createElement("button");
+        btn.style.cssText  = "background:none;border:none;color:#ef4444;font-size:0.75rem;cursor:pointer;text-decoration:underline";
+        btn.textContent    = "Delete";
+        btn.onclick        = () => cancelBooking(b.date, b.item);
+        row.appendChild(btn);
+        bTab.appendChild(row);
+      });
+
+      // --- Users tab ---
+      const uTab = document.getElementById("admin-users-tab");
+      uTab.innerHTML = "<div class='label'>Users (" + nonAdmins.length + ")</div>";
+
+      if (!nonAdmins.length) {
+        uTab.innerHTML += "<p style='font-size:0.75rem;color:#9ca3af'>No users yet.</p>";
+      }
+
+      nonAdmins.forEach(([key, u]) => {
+        const ub   = allBk.filter(b => b.user === key);
+        const wrap = document.createElement("div");
+        wrap.className = "user-row";
+
+        const top  = document.createElement("div");
+        top.className = "flex-between";
+
+        const info = document.createElement("div");
+        info.innerHTML = "<div class='user-name'>" + u.name + "</div>"
+          + "<div style='font-size:0.7rem;color:#9ca3af'>" + ub.length + " booking" + (ub.length !== 1 ? "s" : "") + "</div>";
+
+        ub.forEach(b => {
+          const p = document.createElement("div");
+          p.className   = "user-bk";
+          p.textContent = b.item + " · " + fmtDate(b.date) + " · " + b.slot;
+          info.appendChild(p);
+        });
+
+        const btns = document.createElement("div");
+        btns.style.display = "flex";
+        btns.style.gap     = "4px";
+
+        const eBtn = document.createElement("button");
+        eBtn.className   = "btn-sm btn-blue";
+        eBtn.textContent = "Edit";
+        eBtn.onclick = () => {
+          const existing = document.getElementById("edit-" + key);
+          if (existing) { existing.remove(); return; }
+          const editRow = document.createElement("div");
+          editRow.className = "edit-row";
+          editRow.id        = "edit-" + key;
+          const ip = document.createElement("input");
+          ip.placeholder = "New password";
+          ip.type        = "password";
+          const sv = document.createElement("button");
+          sv.className   = "btn-sm btn-green";
+          sv.textContent = "Save";
+          sv.onclick = async () => {
+            if (!ip.value) return;
+            await sSet("usr:" + key, { ...users[key], password: ip.value });
+            await refresh();
+            editRow.remove();
+            renderAdmin();
+          };
+          const cl = document.createElement("button");
+          cl.className   = "btn-sm btn-g";
+          cl.textContent = "X";
+          cl.onclick     = () => editRow.remove();
+          editRow.appendChild(ip);
+          editRow.appendChild(sv);
+          editRow.appendChild(cl);
+          wrap.appendChild(editRow);
+        };
+
+        const dBtn = document.createElement("button");
+        dBtn.className   = "btn-sm btn-del";
+        dBtn.textContent = "Del";
+        dBtn.onclick = async () => {
+          if (!confirm("Delete user " + u.name + "?")) return;
+          await sDel("usr:" + key);
+          for (const bk of Object.keys(bookings)) {
+            if (bookings[bk].user === key) await sDel("bk:" + bk);
+          }
+          await refresh();
+          renderAdmin();
+        };
+
+        btns.appendChild(eBtn);
+        btns.appendChild(dBtn);
+        top.appendChild(info);
+        top.appendChild(btns);
+        wrap.appendChild(top);
+        uTab.appendChild(wrap);
+      });
+
+      // --- Settings tab ---
+      const sTab = document.getElementById("admin-settings-tab");
+      sTab.innerHTML = "<div class='label'>Admin Settings</div>"
+        + "<p style='font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:8px'>Change Admin Password</p>";
+
+      const ip = document.createElement("input");
+      ip.placeholder    = "New admin password";
+      ip.type           = "password";
+      ip.style.marginBottom = "8px";
+
+      const btn = document.createElement("button");
+      btn.className   = "btn btn-y";
+      btn.textContent = "Update Password";
+      btn.onclick = async () => {
+        if (!ip.value) return;
+        await sSet("usr:admin", { ...users["admin"], password: ip.value });
+        await refresh();
+        alert("Password updated!");
+        ip.value = "";
+      };
+
+      sTab.appendChild(ip);
+      sTab.appendChild(btn);
+    }
+
+    // ---- Init ----
+
+    (async () => {
+      try {
+        await window.storage.get("usr:admin");
+      } catch {
+        await sSet("usr:admin", { name: "Admin", password: "__UNSET__", isAdmin: true });
+      }
+      await refresh();
+      show("pg-login");
+    })();
+
+  </script>
+</body>
+</html>
