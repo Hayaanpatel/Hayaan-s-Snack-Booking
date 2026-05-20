@@ -422,7 +422,6 @@
 </head>
 <body id="body">
 
-  <!-- LOGIN PAGE -->
   <div id="pg-login" class="card">
     <div style="text-align:center; margin-bottom:20px">
       <div style="font-size:2.5rem; margin-bottom:4px">&#x1F35F;&#x1F36A;</div>
@@ -437,7 +436,6 @@
     <button class="btn btn-g" id="auth-toggle" onclick="toggleAuth()">Create Account</button>
   </div>
 
-  <!-- HOME PAGE -->
   <div id="pg-home" class="card hidden">
     <div class="top-row">
       <div>
@@ -469,7 +467,6 @@
     </div>
   </div>
 
-  <!-- ADMIN PAGE -->
   <div id="pg-admin" class="admin-wrap hidden">
     <div class="admin-card">
       <div class="top-row">
@@ -492,7 +489,6 @@
     </div>
   </div>
 
-  <!-- ADMIN FIRST SETUP -->
   <div id="pg-setup" class="card hidden">
     <h2 style="margin-bottom:8px">&#x1F510; Set Admin Password</h2>
     <p class="sub">First time setup — choose your admin password.</p>
@@ -543,12 +539,12 @@
       return days;
     }
 
-    // ---- Storage ----
+    // ---- Fixed Browser-Safe Storage (localStorage) ----
 
     async function sGet(k) {
       try {
-        const r = await window.storage.get(k);
-        return r ? JSON.parse(r.value) : null;
+        const val = localStorage.getItem(k);
+        return val ? JSON.parse(val) : null;
       } catch {
         return null;
       }
@@ -556,20 +552,19 @@
 
     async function sSet(k, v) {
       try {
-        await window.storage.set(k, JSON.stringify(v));
+        localStorage.setItem(k, JSON.stringify(v));
       } catch {}
     }
 
     async function sDel(k) {
       try {
-        await window.storage.delete(k);
+        localStorage.removeItem(k);
       } catch {}
     }
 
     async function sList(prefix) {
       try {
-        const r = await window.storage.list(prefix);
-        return r.keys;
+        return Object.keys(localStorage).filter(key => key.startsWith(prefix));
       } catch {
         return [];
       }
@@ -1020,12 +1015,14 @@
     // ---- Init ----
 
     (async () => {
-      try {
-        await window.storage.get("usr:admin");
-      } catch {
-        await sSet("usr:admin", { name: "Admin", password: "__UNSET__", isAdmin: true });
-      }
       await refresh();
+      
+      // Explicitly check if the admin record does not exist in our locally loaded database object
+      if (!users["admin"]) {
+        await sSet("usr:admin", { name: "Admin", password: "__UNSET__", isAdmin: true });
+        await refresh(); // update application state
+      }
+      
       show("pg-login");
     })();
 
