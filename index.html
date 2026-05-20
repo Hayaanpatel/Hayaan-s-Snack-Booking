@@ -143,6 +143,15 @@
       background: #22c55e;
     }
 
+    .btn-crown {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .btn-crown:hover {
+      background: #fde68a;
+    }
+
     .err {
       color: #ef4444;
       font-size: 0.75rem;
@@ -357,7 +366,7 @@
     /* Admin styles */
     .admin-wrap {
       width: 100%;
-      max-width: 480px;
+      max-width: 520px;
     }
 
     .admin-card {
@@ -528,7 +537,6 @@
       return date + "__" + item;
     }
 
-    // UPDATED: Now only generates and appends valid weekdays (Mon-Fri)
     function nextDays(n) {
       const days = [];
       const base = new Date();
@@ -537,7 +545,6 @@
         const c = new Date(base);
         c.setDate(base.getDate() + i);
         const day = c.getDay();
-        // Skip Sunday (0) and Saturday (6)
         if (day !== 0 && day !== 6) {
           days.push(c.toISOString().split("T")[0]);
         }
@@ -546,7 +553,7 @@
       return days;
     }
 
-    // ---- Fixed Browser-Safe Storage (localStorage) ----
+    // ---- Storage ----
 
     async function sGet(k) {
       try {
@@ -696,7 +703,6 @@
 
     // ---- Home page ----
 
-    // UPDATED: Standardized to default strictly to the closest upcoming weekday
     function renderHome() {
       const wDays = nextDays(1);
       selDate = wDays[0] || todayStr();
@@ -825,8 +831,6 @@
 
     async function doBook(item) {
       const bMsg     = document.getElementById("book-msg");
-
-      // UPDATED: Strict fail-safe block to explicitly reject weekend selections
       const checkDate = new Date(selDate + "T00:00:00");
       if (checkDate.getDay() === 0 || checkDate.getDay() === 6) {
         bMsg.classList.remove("hidden");
@@ -937,8 +941,11 @@
         const top  = document.createElement("div");
         top.className = "flex-between";
 
+        // UPDATED: Appends an explicit visually colored tag if the target user has admin rights
         const info = document.createElement("div");
-        info.innerHTML = "<div class='user-name'>" + u.name + "</div>"
+        info.innerHTML = "<div class='user-name'>" + u.name 
+          + (u.isAdmin ? " <span style='color:#eab308;font-size:0.65rem;background:#fef3c7;padding:1px 4px;border-radius:4px'>Admin</span>" : "") 
+          + "</div>"
           + "<div style='font-size:0.7rem;color:#9ca3af'>" + ub.length + " booking" + (ub.length !== 1 ? "s" : "") + "</div>";
 
         ub.forEach(b => {
@@ -951,6 +958,17 @@
         const btns = document.createElement("div");
         btns.style.display = "flex";
         btns.style.gap     = "4px";
+
+        // ADDED: Administrative role modification control button
+        const admBtn = document.createElement("button");
+        admBtn.className = "btn-sm " + (u.isAdmin ? "btn-g" : "btn-crown");
+        admBtn.textContent = u.isAdmin ? "Demote" : "Make Admin";
+        admBtn.onclick = async () => {
+          users[key].isAdmin = !users[key].isAdmin;
+          await sSet("usr:" + key, users[key]);
+          await refresh();
+          renderAdmin();
+        };
 
         const eBtn = document.createElement("button");
         eBtn.className   = "btn-sm btn-blue";
@@ -997,6 +1015,7 @@
           renderAdmin();
         };
 
+        btns.appendChild(admBtn);
         btns.appendChild(eBtn);
         btns.appendChild(dBtn);
         top.appendChild(info);
@@ -1008,7 +1027,7 @@
       // --- Settings tab ---
       const sTab = document.getElementById("admin-settings-tab");
       sTab.innerHTML = "<div class='label'>Admin Settings</div>"
-        + "<p style='font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:8px'>Change Admin Password</p>";
+        + "<p style='font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:8px'>Change Master Admin Password</p>";
 
       const ip = document.createElement("input");
       ip.placeholder    = "New admin password";
